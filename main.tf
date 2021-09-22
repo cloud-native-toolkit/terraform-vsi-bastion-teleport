@@ -33,7 +33,7 @@ locals {
       HOSTNAME = var.hostname,
       DOMAIN = var.domain,
       COS_BUCKET = var.cos_bucket,
-      COS_BUCKET_ENDPOINT = var.cos_bucket_endpint,
+      COS_BUCKET_ENDPOINT = var.cos_bucket_endpoint,
       HMAC_ACCESS_KEY_ID = data.ibm_resource_key.cos_resourceKey.credentials["cos_hmac_keys.access_key_id"],
       HMAC_SECRET_ACCESS_KEY_ID = data.ibm_resource_key.cos_resourceKey.credentials["cos_hmac_keys.secret_access_key"],
       APPID_CLIENT_ID = data.ibm_resource_key.appid_resourceKey.credentials["clientId"],

@@ -73,7 +73,7 @@ variable "cos_bucket" {
   type = string
 }
 
-variable "cos_bucket_endpint" {
+variable "cos_bucket_endpoint" {
   description = "The endpoint of the cos bucket"
   type = string
 }
