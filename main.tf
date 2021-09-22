@@ -151,8 +151,3 @@ resource "ibm_is_instance" "instance" {
   }
 }
 
-resource "ibm_is_floating_ip" "floatingip" {
- name   = "cloud-init-ip"
- target = ibm_is_instance.instance.primary_network_interface[0].id
-}
-
