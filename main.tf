@@ -86,7 +86,7 @@ locals {
       port_max = 3080
     }
   ]
-  dns_server_addresses =  ["161.26.0.7", "161.26.0.8", "161.26.0.10", "161.26.0.11", "10.240.1.11"]
+  dns_server_addresses =  ["161.26.0.7", "161.26.0.8", "161.26.0.10", "161.26.0.11"]
 }
 
 resource "ibm_is_security_group_rule" "bastion_sg_inbound_rules" {
