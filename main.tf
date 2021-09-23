@@ -58,7 +58,7 @@ resource "ibm_is_security_group" "bastion_security_group" {
 }
 
 locals {
-  ingress_tcp_rules = [
+  inbound_tcp_rules = [
     { 
       port_min = 22,
       port_max = 22
@@ -72,7 +72,7 @@ locals {
       port_max = 3080
     }
   ]
-  outgress_tcp_rules = [
+  outbound_tcp_rules = [
     { 
       port_min = 443,
       port_max = 443
@@ -90,26 +90,22 @@ locals {
 }
 
 resource "ibm_is_security_group_rule" "bastion_sg_inbound_rules" {
+  count = length(local.inbound_tcp_rules)
   group     = ibm_is_security_group.bastion_security_group.id
   direction = "inbound"
-  dynamic "tcp" {
-    for_each = local.ingress_tcp_rules
-    content {
-      port_min = tcp.value.port_min
-      port_max = tcp.value.port_max
-    }
+  tcp {
+    port_min = local.inbound_tcp_rules[count.index].port_min
+    port_max = local.inbound_tcp_rules[count.index].port_max
   }
 }
 
 resource "ibm_is_security_group_rule" "bastion_sg_outbound_rules" {
+  count = length(local.outbound_tcp_rules)
   group     = ibm_is_security_group.bastion_security_group.id
   direction = "outbound"
-  dynamic "tcp" {
-    for_each = local.outgress_tcp_rules
-    content {
-      port_min = tcp.value.port_min
-      port_max = tcp.value.port_max
-    }
+   tcp {
+    port_min = local.outbound_tcp_rules[count.index].port_min
+    port_max = local.outbound_tcp_rules[count.index].port_max
   }
 }
 
