@@ -184,5 +184,10 @@ write_files:
       #    ufw allow 3023,3080/tcp
       #fi
 
+      sleep 120
+      ## Apply the oidc and role configuration
+      tctl create $setup_path/roles.yaml
+      tctl create $setup_path/oidc.yaml
+
 runcmd:
    - /root/install.sh
