@@ -53,6 +53,11 @@ variable ssh_key_names {
     error_message = "At least one SHH key name must be provided."
     condition     = length(var.ssh_key_names) > 0
   }
+  
+  validation  {
+      error_message = "Each ssh key name in the list must be unique."
+      condition     = length(var.ssh_key_names) == length(distinct(var.ssh_key_names))
+  }
 }
 
 ##############################################################################
