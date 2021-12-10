@@ -39,6 +39,11 @@ variable subnet_names {
     description = "A list of subnets name in VPC where VSI will be created"
     type        = list(string)
 
+    validation {
+      error_message = "At least one subnet name must be provided."
+      condition     = length(var.subnet_names) > 0
+    }
+
     validation  {
       error_message = "Each subnet name in the list must be unique."
       condition     = length(var.subnet_names) == length(distinct(var.subnet_names))
@@ -81,7 +86,7 @@ variable appid_resource_key_name {
 
 
 ##############################################################################
-# APP ID Variables
+# COS Variables
 ##############################################################################
 
 variable cos_name { 
