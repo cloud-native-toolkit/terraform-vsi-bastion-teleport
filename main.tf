@@ -48,7 +48,7 @@ data ibm_resource_key appid_resource_key {
 
 
 ##############################################################################
-# COS Data
+# COS Instance
 ##############################################################################
 
 resource ibm_resource_instance cos { 
