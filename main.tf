@@ -2,7 +2,7 @@
 # Resource Group where VSI Resources Will Be Created
 ##############################################################################
 
-data ibm_resource_group resource_group {
+data "ibm_resource_group" "resource_group" {
   name = var.resource_group
 }
 
@@ -13,16 +13,16 @@ data ibm_resource_group resource_group {
 # VPC Data
 ##############################################################################
 
-data ibm_is_vpc vpc {
+data "ibm_is_vpc" "vpc" {
   name = var.vpc_name
 }
 
-data ibm_is_subnet subnet {
+data "ibm_is_subnet" "subnet" {
   for_each = toset(var.subnet_names)
   name     = each.key
 }
 
-data ibm_is_ssh_key ssh_key {
+data "ibm_is_ssh_key" "ssh_key" {
   for_each = toset(var.ssh_key_names)
   name     = each.key
 }
@@ -33,11 +33,11 @@ data ibm_is_ssh_key ssh_key {
 # Teleport Instance
 ##############################################################################
 
-data ibm_is_image vsi_image {
+data "ibm_is_image" "vsi_image" {
   name = var.image_name
 }
 
-resource ibm_is_instance teleport_vsi {
+resource "ibm_is_instance" "teleport_vsi" {
   for_each       = toset(var.subnet_names)
   name           = "${var.prefix}-teleport-vsi-${index(var.subnet_names, each.key) + 1}"
   image          = data.ibm_is_image.vsi_image.id

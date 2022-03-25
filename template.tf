@@ -15,9 +15,9 @@ locals {
       COS_BUCKET_ENDPOINT       = ibm_cos_bucket.cos_bucket.s3_endpoint_public,
       HMAC_ACCESS_KEY_ID        = ibm_resource_key.cos_resource_key.credentials["cos_hmac_keys.access_key_id"],
       HMAC_SECRET_ACCESS_KEY_ID = ibm_resource_key.cos_resource_key.credentials["cos_hmac_keys.secret_access_key"],
-      APPID_CLIENT_ID           = var.createNew==true ? ibm_resource_key.new_appid_resource_key[0].credentials["clientId"] : data.ibm_resource_key.appid_resource_key[0].credentials["clientId"],
-      APPID_CLIENT_SECRET       = var.createNew==true ? ibm_resource_key.new_appid_resource_key[0].credentials["secret"] : data.ibm_resource_key.appid_resource_key[0].credentials["secret"],
-      APPID_ISSUER_URL          = var.createNew==true ? ibm_resource_key.new_appid_resource_key[0].credentials["oauthServerUrl"] : data.ibm_resource_key.appid_resource_key[0].credentials["oauthServerUrl"],
+      APPID_CLIENT_ID           = var.create_new_appid == true ? ibm_resource_key.new_appid_resource_key[0].credentials["clientId"] : data.ibm_resource_key.appid_resource_key[0].credentials["clientId"],
+      APPID_CLIENT_SECRET       = var.create_new_appid == true ? ibm_resource_key.new_appid_resource_key[0].credentials["secret"] : data.ibm_resource_key.appid_resource_key[0].credentials["secret"],
+      APPID_ISSUER_URL          = var.create_new_appid == true ? ibm_resource_key.new_appid_resource_key[0].credentials["oauthServerUrl"] : data.ibm_resource_key.appid_resource_key[0].credentials["oauthServerUrl"],
       TELEPORT_VERSION          = var.teleport_version,
       CLAIM_TO_ROLES            = var.claims_to_roles,
       MESSAGE_OF_THE_DAY        = var.message_of_the_day
