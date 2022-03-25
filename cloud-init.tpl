@@ -117,8 +117,8 @@ write_files:
       [Service]
       Type=simple
       Restart=on-failure
-      Environment=AWS_ACCESS_KEY_ID="${HMAC_ACCESS_KEY_ID}"
-      Environment=AWS_SECRET_ACCESS_KEY="${HMAC_SECRET_ACCESS_KEY_ID}"
+      Environment=AWS_ACCESS_KEY_ID=${HMAC_ACCESS_KEY_ID}
+      Environment=AWS_SECRET_ACCESS_KEY=${HMAC_SECRET_ACCESS_KEY_ID}
       ExecStart=/usr/local/bin/teleport start --config=/etc/teleport.yaml --pid-file=/run/teleport.pid
       ExecReload=/bin/kill -HUP $MAINPID
       PIDFile=/run/teleport.pid
