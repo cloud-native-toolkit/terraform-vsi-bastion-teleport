@@ -1,24 +1,29 @@
-#cloud-config
+
+#cloud-config                                                                                      
+# This file is used to install teleport on a bastion host, configure teleport with App ID, and    
+# configure teleport with a COS instance.                                                         
+# https://github.com/cloud-native-toolkit/terraform-vsi-bastion-teleport/blob/main/cloud-init.tpl 
 packages:
   - tar
 write_files:
+    # writing teleport license
   - path: /root/license.pem
-    permissions: '0644'
-    encoding: base64
+    permissions: "0644"
     content: ${TELEPORT_LICENSE}
 
-  - path: /root/cert.pem
-    permission: '0644'
-    encoding: base64
+    # writing https cert
+  - path: /root/ca.crt
+    permissions: "0644"
     content: ${HTTPS_CERT}
-    
-  - path: /root/key.pem
-    permission: '0644'
-    encoding: base64
+
+    # writing https key
+  - path: /root/ca.key
+    permissions: "0644"
     content: ${HTTPS_KEY}
 
+    # writing teleport roles
   - path: /root/roles.yaml
-    permission: '0644'
+    permissions: "0644"
     content: |
       # Example role
       # Add any additional ones to the end
@@ -46,9 +51,10 @@ write_files:
           - resources: ["*"]
             verbs: ["*"]
       ---
-   
+
+    # writing oidc file to use App ID for authentication
   - path: /root/oidc.yaml
-    permission: '0644'
+    permissions: "0644"
     content: |
       #oidc connector
       kind: oidc
@@ -67,8 +73,9 @@ write_files:
           - {claim: "email", value: "${claims.email}", roles: ${jsonencode(claims.roles)}}
          %{~ endfor ~}
 
+    # writing configuration for teleport
   - path: /etc/teleport.yaml
-    permission: '0644'
+    permissions: "0644"
     content: |
       #teleport.yaml
       teleport:
@@ -104,11 +111,12 @@ write_files:
         listen_addr: 0.0.0.0:3023
         web_listen_addr: 0.0.0.0:3080
         tunnel_listen_addr: 0.0.0.0:3024
-        https_cert_file: /var/lib/teleport/cert.pem
-        https_key_file: /var/lib/teleport/key.pem
+        https_cert_file: /var/lib/teleport/ca.crt
+        https_key_file: /var/lib/teleport/ca.key
 
+    # writing script to start teleport
   - path: /etc/systemd/system/teleport.service
-    permissions: '0644'
+    permissions: "0644"
     content: |
       [Unit]
       Description=Teleport Service
@@ -117,8 +125,8 @@ write_files:
       [Service]
       Type=simple
       Restart=on-failure
-      Environment=AWS_ACCESS_KEY_ID="${HMAC_ACCESS_KEY_ID}"
-      Environment=AWS_SECRET_ACCESS_KEY="${HMAC_SECRET_ACCESS_KEY_ID}"
+      Environment=AWS_ACCESS_KEY_ID=${HMAC_ACCESS_KEY_ID}
+      Environment=AWS_SECRET_ACCESS_KEY=${HMAC_SECRET_ACCESS_KEY_ID}
       ExecStart=/usr/local/bin/teleport start --config=/etc/teleport.yaml --pid-file=/run/teleport.pid
       ExecReload=/bin/kill -HUP $MAINPID
       PIDFile=/run/teleport.pid
@@ -126,8 +134,9 @@ write_files:
       [Install]
       WantedBy=multi-user.target
 
+    # writing script to install teleport on bastion host
   - path: /root/install.sh
-    permissions: '0755'
+    permissions: "0755"
     content: |
       #!/bin/bash
       set -x
@@ -151,8 +160,8 @@ write_files:
 
       #copy files for /root to /var/lib/
       cp $setup_path/license.pem $TELEPORT_CONFIG_PATH
-      cp $setup_path/cert.pem $TELEPORT_CONFIG_PATH
-      cp $setup_path/key.pem $TELEPORT_CONFIG_PATH
+      cp $setup_path/ca.crt $TELEPORT_CONFIG_PATH
+      cp $setup_path/ca.key $TELEPORT_CONFIG_PATH
 
       sudo systemctl daemon-reload
       sudo systemctl start teleport
@@ -190,4 +199,12 @@ write_files:
       tctl create $setup_path/oidc.yaml
 
 runcmd:
-   - /root/install.sh
+    # running the script to install teleport on bastion host
+  - |
+    set -x
+    (
+      while [ ! -f /root/install.sh ]; do
+        sleep 10
+      done
+      /root/install.sh
+    ) &
